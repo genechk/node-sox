@@ -17,6 +17,9 @@ var conversions = {
   channelCount: int,
   duration: float,
   bitRate: parseBitRate,
+  bitsPerSample: int,
+  precision: int,
+  encoding: setEncoding
 }
 var suffixMultiplier = {
   'k': 1024,
@@ -27,6 +30,9 @@ function parseBitRate(str) {
   var mult = suffixMultiplier[str[str.length - 1]];
   var n = parseInt(str, 10);
   return mult ? mult * n : n;
+}
+function setEncoding(str) {
+  return str === ('Signed Integer PCM' || '16-bit Signed Integer PCM'  || '24-bit Signed Integer PCM' ) ? 'signed' : undefined;
 }
 
 function capture(exe, args, callback){
@@ -60,6 +66,9 @@ function identify(inputFile, callback){
   soxInfo('-s', function(value) { results.sampleCount   = value; });
   soxInfo('-D', function(value) { results.duration      = value; });
   soxInfo('-B', function(value) { results.bitRate       = value; });
+  soxInfo('-b', function(value) { results.bitsPerSample = value; });
+  soxInfo('-p', function(value) { results.precision     = value; });
+  soxInfo('-e', function(value) { results.encoding      = value; });
 
   batch.end(function(err) {
     if (err) return callback(err);
